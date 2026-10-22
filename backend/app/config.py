@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     jwt_expire_minutes: int = Field(default=60, ge=1, le=1440)
     frontend_origin: str = "http://localhost:3000"
     demo_mode: bool = False
-    demo_admin_email: str = "admin@example.test"
+    demo_admin_email: str = "admin@example.com"
     demo_admin_password: str | None = None
     demo_official_password: str | None = None
     demo_verifier_password: str | None = None

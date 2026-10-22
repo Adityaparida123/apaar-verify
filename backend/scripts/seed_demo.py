@@ -117,8 +117,8 @@ def main() -> None:
             )
     for role, email, institution_id, password_key in (
         ("institution_admin", settings.demo_admin_email, institution["institution_id"], "admin"),
-        ("aicte_official", "official@example.test", None, "official"),
-        ("verifier", "verifier@example.test", None, "verifier"),
+        ("aicte_official", "official@example.com", None, "official"),
+        ("verifier", "verifier@example.com", None, "verifier"),
     ):
         user_id = "demo-" + role
         user = {
