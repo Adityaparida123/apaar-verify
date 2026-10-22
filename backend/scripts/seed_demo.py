@@ -1,5 +1,5 @@
 import argparse
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, time
 from uuid import uuid4
 
 from pymongo import MongoClient
@@ -81,7 +81,7 @@ def main() -> None:
             "institution_id": institution["institution_id"],
             "programme": programme,
             "academic_year": academic_year,
-            "admission_date": date(2025, 8, 1),
+            "admission_date": datetime.combine(date(2025, 8, 1), time.min, tzinfo=UTC),
             "admission_category": "regular",
             "nri_status": False,
             "oci_status": False,
