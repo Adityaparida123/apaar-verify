@@ -9,7 +9,7 @@ import { errorMessage } from "@/lib/api";
 
 export default function LoginPage() {
   const { signIn } = useAuth();
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("admin@example.com");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
