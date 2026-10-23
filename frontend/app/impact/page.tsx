@@ -162,10 +162,26 @@ function validateField(field: FieldKey, value: string | boolean): string | null 
 }
 
 function safeErrorMessage(cause: unknown): string {
+  if (cause instanceof ApiError && cause.status === 409) {
+    if (isVersionConflict(cause)) {
+      return "The record version changed while this correction was being reviewed. Reload the record and create a new preview.";
+    }
+    if (typeof cause.detail === "string" && cause.detail.includes("APAAR identifier already belongs to another student")) {
+      return "This APAAR identifier is already associated with another student. Review the proposed identifier before trying again.";
+    }
+    return "The correction conflicts with existing record data. Review the proposed values before trying again.";
+  }
   if (cause instanceof ApiError && cause.status === 422) {
     return "The proposed change did not pass validation. Review the highlighted fields and try again.";
   }
   return errorMessage(cause);
+}
+
+function isVersionConflict(cause: unknown): boolean {
+  if (!(cause instanceof ApiError) || cause.status !== 409 || typeof cause.detail !== "string") {
+    return false;
+  }
+  return /record changed since (?:it was loaded|preview)/i.test(cause.detail);
 }
 
 function displayValue(value: unknown, field?: string): string {
@@ -270,7 +286,6 @@ export default function ImpactPage() {
     setChanges((current) => ({ ...current, [field]: value }));
     setPreview(null);
     setError("");
-    setConflict(false);
   }
 
   function buildChanges(): StudentChanges {
@@ -300,7 +315,7 @@ export default function ImpactPage() {
 
   async function runPreview(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!canCorrect || !student || loading || Object.keys(normalizedChanges).length === 0
+    if (!canCorrect || !student || loading || conflict || Object.keys(normalizedChanges).length === 0
       || Object.keys(fieldErrors).length > 0) return;
     setLoading(true);
     setError("");
@@ -314,8 +329,13 @@ export default function ImpactPage() {
       setReason("");
       setStage(2);
     } catch (cause) {
+      const versionConflict = isVersionConflict(cause);
       setError(safeErrorMessage(cause));
-      setConflict(cause instanceof ApiError && cause.status === 409);
+      setConflict(versionConflict);
+      if (versionConflict) {
+        setPreview(null);
+        setStage(1);
+      }
     } finally {
       setLoading(false);
     }
@@ -341,8 +361,13 @@ export default function ImpactPage() {
       setPreview(null);
       setStage(3);
     } catch (cause) {
+      const versionConflict = isVersionConflict(cause);
       setError(safeErrorMessage(cause));
-      setConflict(cause instanceof ApiError && cause.status === 409);
+      setConflict(versionConflict);
+      if (versionConflict) {
+        setPreview(null);
+        setStage(1);
+      }
     } finally {
       applying.current = false;
       setLoading(false);
@@ -417,7 +442,7 @@ export default function ImpactPage() {
 
           {error && (
             <div className="impact-error" role="alert">
-              <LoadError>{conflict ? "This record changed after the preview. Nothing was applied. Reload the record and create a new preview before confirming." : error}</LoadError>
+              <LoadError>{conflict ? "The record version no longer matches the version used for this request. Nothing was applied. Reload the record and create a new preview." : error}</LoadError>
               {conflict && student && (
                 <button className="button button-secondary button-small" type="button" disabled={loading} onClick={reloadCurrentRecord}>
                   {loading ? "Reloading…" : "Reload current record"}
@@ -463,6 +488,7 @@ export default function ImpactPage() {
                         type="button"
                         key={record.record_id}
                         onClick={() => {
+                          if (record.record_id === recordId) return;
                           setRecordId(record.record_id);
                           setStudent(null);
                           setChanges({});
@@ -572,7 +598,7 @@ export default function ImpactPage() {
                       <button
                         className="button button-accent"
                         type="submit"
-                        disabled={loading || Object.keys(normalizedChanges).length === 0 || Object.keys(fieldErrors).length > 0}
+                        disabled={loading || conflict || Object.keys(normalizedChanges).length === 0 || Object.keys(fieldErrors).length > 0}
                       >
                         {loading ? "Preparing preview…" : "Preview changes"} <ArrowRight size={15} aria-hidden="true" />
                       </button>
