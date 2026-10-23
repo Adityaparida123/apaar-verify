@@ -251,13 +251,16 @@ tbody tr:hover { background: color-mix(in srgb, var(--forest-soft) 35%, transpar
 .impact-count { color: var(--ink) !important; font-weight: 700; }
 .impact-review-required { display: inline-flex; align-items: center; gap: 6px; color: var(--persimmon-ink) !important; font-size: 11px !important; font-weight: 700; }
 .impact-details { margin-top: 12px; color: var(--muted); font-size: 11px; }
-.impact-details summary { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.impact-details summary { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); cursor: pointer; list-style: none; }
+.impact-details summary::-webkit-details-marker { display: none; }
+.impact-details summary:focus-visible { border-radius: 3px; outline: 2px solid var(--persimmon); outline-offset: 3px; }
+.impact-technical-details { margin-top: 9px; font-size: 10px; }
+.impact-technical-details summary { opacity: .85; }
 .impact-details[open] summary svg { transform: rotate(180deg); }
 .impact-details dl { display: grid; gap: 5px; margin: 10px 0; }
-.impact-details dl div { display: grid; grid-template-columns: 145px minmax(0, 1fr); gap: 10px; }
+.impact-details dl div { display: grid; grid-template-columns: 135px minmax(0, 1fr); gap: 10px; }
 .impact-details dt { color: var(--muted); }
 .impact-details dd { margin: 0; color: var(--body); overflow-wrap: anywhere; }
-.impact-details ul { margin: 7px 0 0; padding-left: 18px; overflow-wrap: anywhere; }
 .impact-change-summary { padding: 18px; background: var(--lavender); }
 .impact-change-summary .section-label { color: var(--ink); }
 .impact-summary-name { margin-bottom: 2px; color: var(--ink); font-size: 13px; font-weight: 700; }
@@ -265,8 +268,6 @@ tbody tr:hover { background: color-mix(in srgb, var(--forest-soft) 35%, transpar
 .impact-change-head { margin-top: 13px; color: var(--muted); font-size: 9px; font-weight: 700; text-transform: uppercase; }
 .impact-change-row strong { color: var(--ink); font-weight: 600; }
 .impact-change-row span:last-child { color: var(--persimmon-ink); font-weight: 700; }
-.impact-preview-details { margin-top: 14px; }
-.impact-preview-details p { margin: 7px 0 0; overflow-wrap: anywhere; font-family: ui-monospace, monospace; font-size: 10px; }
 .impact-actions { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--line); }
 .impact-confirmation > h2 { margin-bottom: 5px; }
 .impact-confirm-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; margin: 25px 0; }

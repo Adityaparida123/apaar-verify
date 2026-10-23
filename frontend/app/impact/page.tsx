@@ -46,10 +46,10 @@ type FindingView = {
   explanation: string;
   action: string;
   severity: Finding["severity"];
-  certainty: string;
-  confirmed: boolean;
+  certainty?: string;
+  confirmed?: boolean;
   humanReviewRequired: boolean;
-  affectedRecords: string[];
+  affectedRecordCount: number;
   category: "confirmed" | "review" | "unverified";
   ruleId?: string;
 };
@@ -96,7 +96,7 @@ function findingViews(preview: PreviewResponse): FindingView[] {
       certainty,
       confirmed: finding.confirmed,
       humanReviewRequired: finding.human_review_required,
-      affectedRecords: finding.affected_records,
+      affectedRecordCount: finding.affected_records.length,
       category,
       ruleId: finding.rule_id,
     };
@@ -109,10 +109,8 @@ function findingViews(preview: PreviewResponse): FindingView[] {
       explanation: task.explanation,
       action: task.suggested_action,
       severity: task.severity,
-      certainty: "Not provided by the preview response",
-      confirmed: false,
       humanReviewRequired: true,
-      affectedRecords: [],
+      affectedRecordCount: 0,
       category: "review",
     });
   });
@@ -616,21 +614,18 @@ export default function ImpactPage() {
                       <h3>{finding.title}</h3>
                       <p>{finding.explanation}</p>
                       <p className="impact-action"><strong>Next step:</strong> {finding.action}</p>
-                      {finding.affectedRecords.length > 0 && (
-                        <p className="impact-count">{finding.affectedRecords.length} affected record{finding.affectedRecords.length === 1 ? "" : "s"}</p>
+                      {finding.affectedRecordCount > 0 && (
+                        <p className="impact-count">{finding.affectedRecordCount} affected record{finding.affectedRecordCount === 1 ? "" : "s"}</p>
                       )}
                       {finding.humanReviewRequired && <p className="impact-review-required"><AlertTriangle size={14} aria-hidden="true" /> Human review required</p>}
-                      {(finding.ruleId || finding.affectedRecords.length > 0 || finding.certainty) && (
-                        <details className="impact-details">
-                          <summary>Authorized reviewer details <ChevronDown size={14} aria-hidden="true" /></summary>
+                      {(finding.ruleId || finding.certainty || finding.confirmed !== undefined) && (
+                        <details className="impact-details impact-technical-details">
+                          <summary>Technical details <ChevronDown size={14} aria-hidden="true" /></summary>
                           <dl>
-                            <div><dt>Backend certainty</dt><dd>{finding.certainty}</dd></div>
-                            <div><dt>Confirmed by backend</dt><dd>{finding.confirmed ? "Yes" : "No"}</dd></div>
-                            {finding.ruleId && <div><dt>Finding reference</dt><dd>{finding.ruleId}</dd></div>}
+                            {finding.certainty && <div><dt>Backend certainty</dt><dd>{finding.certainty}</dd></div>}
+                            {finding.confirmed !== undefined && <div><dt>Backend confirmation flag</dt><dd>{finding.confirmed ? "Yes" : "No"}</dd></div>}
+                            {finding.ruleId && <div><dt>Rule reference</dt><dd>{finding.ruleId}</dd></div>}
                           </dl>
-                          {finding.affectedRecords.length > 0 && (
-                            <ul aria-label="Affected record references">{finding.affectedRecords.map((reference) => <li key={reference}>{reference}</li>)}</ul>
-                          )}
                         </details>
                       )}
                     </article>
@@ -651,10 +646,6 @@ export default function ImpactPage() {
                       <span>{displayValue(value, field)}</span>
                     </div>
                   ))}
-                  <details className="impact-details impact-preview-details">
-                    <summary>Preview reference <ChevronDown size={14} aria-hidden="true" /></summary>
-                    <p>{preview.assessment.assessment_id}</p>
-                  </details>
                 </aside>
               </div>
 
