@@ -9,6 +9,7 @@ interface AuthContextValue {
   user: User | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
+  signInWithGoogle: (credential: string) => Promise<void>;
   signOut: () => void;
 }
 
@@ -49,9 +50,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [router]);
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    const result = await api.login(email, password);
-    storeToken(result.access_token);
+  const establishSession = useCallback(async (accessToken: string) => {
+    storeToken(accessToken);
     try {
       const authenticatedUser = await api.me();
       setUser(authenticatedUser);
@@ -62,13 +62,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [router]);
 
+  const signIn = useCallback(async (email: string, password: string) => {
+    const result = await api.login(email, password);
+    await establishSession(result.access_token);
+  }, [establishSession]);
+
+  const signInWithGoogle = useCallback(async (credential: string) => {
+    const result = await api.googleLogin(credential);
+    await establishSession(result.access_token);
+  }, [establishSession]);
+
   const signOut = useCallback(() => {
     clearToken();
     setUser(null);
     router.replace("/login");
   }, [router]);
 
-  const value = useMemo(() => ({ user, loading, signIn, signOut }), [user, loading, signIn, signOut]);
+  const value = useMemo(
+    () => ({ user, loading, signIn, signInWithGoogle, signOut }),
+    [user, loading, signIn, signInWithGoogle, signOut],
+  );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

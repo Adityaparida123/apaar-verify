@@ -31,9 +31,9 @@ npm run dev
 
 ## Configuration names
 
-Backend configuration uses `MONGODB_URI`, `MONGODB_DATABASE`, `JWT_SECRET`, `JWT_EXPIRE_MINUTES`, and `FRONTEND_ORIGIN`. Demo seeding additionally uses `DEMO_MODE`, `DEMO_ADMIN_PASSWORD`, `DEMO_OFFICIAL_PASSWORD`, and `DEMO_VERIFIER_PASSWORD`. `GEMINI_API_KEY` is reserved for a future backend integration and is not currently used.
+Backend configuration uses `MONGODB_URI`, `MONGODB_DATABASE`, `JWT_SECRET`, `JWT_EXPIRE_MINUTES`, `FRONTEND_ORIGIN`, and (for Google sign-in) `GOOGLE_CLIENT_ID`. Demo seeding additionally uses `DEMO_MODE`, `DEMO_ADMIN_PASSWORD`, `DEMO_OFFICIAL_PASSWORD`, and `DEMO_VERIFIER_PASSWORD`. `GEMINI_API_KEY` is reserved for a future backend integration and is not currently used. The frontend uses `NEXT_PUBLIC_API_URL` and the public `NEXT_PUBLIC_GOOGLE_CLIENT_ID`; see the backend and frontend READMEs for OAuth setup.
 
-The frontend uses `NEXT_PUBLIC_API_URL` for the backend origin. Do not put MongoDB credentials, JWT secrets, Gemini keys, or demo passwords in frontend configuration.
+The frontend uses `NEXT_PUBLIC_API_URL` for the backend origin. `NEXT_PUBLIC_GOOGLE_CLIENT_ID` is a public OAuth client ID. Do not put MongoDB credentials, JWT secrets, Gemini keys, or demo passwords in frontend configuration.
 
 ## Tests
 

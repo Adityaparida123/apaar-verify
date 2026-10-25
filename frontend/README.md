@@ -12,10 +12,10 @@ Next.js App Router frontend for the existing FastAPI backend. The frontend uses 
    Copy-Item .env.example .env.local
    ```
 
-3. Set `NEXT_PUBLIC_API_URL` in `.env.local` to the backend origin, without a trailing slash. The default is `http://localhost:8000`.
+3. Set `NEXT_PUBLIC_API_URL` in `.env.local` to the backend origin, without a trailing slash. The default is `http://localhost:8000`. For Google sign-in, also set `NEXT_PUBLIC_GOOGLE_CLIENT_ID` to the public Web application OAuth client ID; see the [backend Google sign-in configuration](../backend/README.md#render-and-frontend).
 4. Run `npm run dev` and open `http://localhost:3000`.
 
-The backend's `FRONTEND_ORIGIN` must include `http://localhost:3000` for local CORS. For deployment, configure `NEXT_PUBLIC_API_URL` in Vercel for the relevant environments and set the matching deployed frontend origin in the backend's `FRONTEND_ORIGIN`.
+The backend's `FRONTEND_ORIGIN` must include `http://localhost:3000` for local CORS. For deployment, configure `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_GOOGLE_CLIENT_ID` in Vercel for the relevant environments and set the matching deployed frontend origin in the backend's `FRONTEND_ORIGIN`. The same OAuth client ID must be configured as `GOOGLE_CLIENT_ID` in Render. Register each exact frontend origin as an authorized JavaScript origin in Google Cloud; the GIS popup flow does not use redirect URIs or a client secret.
 
 ## Backend-supported features and limitations
 

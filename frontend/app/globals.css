@@ -183,6 +183,9 @@ tbody tr:hover { background: color-mix(in srgb, var(--forest-soft) 35%, transpar
 .auth-form-side { display: grid; place-items: center; padding: 30px; }
 .auth-card { width: min(100%, 430px); padding: clamp(25px, 4vw, 42px); border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); }
 .auth-card h2 { margin-bottom: 5px; font-size: 32px; }
+.google-signin-button { display: flex; min-height: 40px; justify-content: center; }
+.auth-divider { display: flex; align-items: center; gap: 12px; margin: 17px 0; color: var(--muted); font-size: 11px; }
+.auth-divider::before, .auth-divider::after { height: 1px; flex: 1; background: var(--line); content: ""; }
 .token-box { overflow-wrap: anywhere; padding: 13px; border: 1px dashed var(--line); border-radius: 6px; background: var(--surface-soft); font-family: ui-monospace, monospace; font-size: 12px; }
 .chart-list { display: grid; gap: 13px; }
 .chart-row { display: grid; grid-template-columns: minmax(100px, 1fr) minmax(120px, 3fr) 70px; align-items: center; gap: 12px; font-size: 11px; }

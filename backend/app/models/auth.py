@@ -8,6 +8,10 @@ class LoginRequest(APIModel):
     password: str = Field(min_length=1, max_length=256)
 
 
+class GoogleLoginRequest(APIModel):
+    credential: str = Field(min_length=1, max_length=8192)
+
+
 class UserResponse(APIModel):
     user_id: str
     email: EmailStr

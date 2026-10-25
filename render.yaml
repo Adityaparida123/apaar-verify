@@ -17,6 +17,8 @@ services:
         value: "60"
       - key: FRONTEND_ORIGIN
         sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
       - key: GEMINI_API_KEY
         sync: false
       - key: DEMO_MODE

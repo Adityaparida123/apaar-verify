@@ -77,6 +77,12 @@ export const api = {
       { method: "POST", body: JSON.stringify({ email, password }) },
       false,
     ),
+  googleLogin: (credential: string) =>
+    request<{ access_token: string; token_type: string; expires_in: number }>(
+      "/api/v1/auth/google",
+      { method: "POST", body: JSON.stringify({ credential }) },
+      false,
+    ),
   me: () => request<User>("/api/v1/auth/me"),
   students: (params: URLSearchParams) =>
     request<PageResult<Student>>(`/api/v1/students?${params.toString()}`),

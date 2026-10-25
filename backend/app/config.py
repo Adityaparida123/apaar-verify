@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     jwt_secret: str | None = None
     jwt_expire_minutes: int = Field(default=60, ge=1, le=1440)
     frontend_origin: str = "http://localhost:3000"
+    google_client_id: str | None = None
     demo_mode: bool = False
     demo_admin_email: str = "admin@example.com"
     demo_admin_password: str | None = None
