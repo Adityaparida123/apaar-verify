@@ -6,7 +6,7 @@ import Link from "next/link";
 import Script from "next/script";
 import { useAuth } from "@/components/auth-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { ApiError, errorMessage } from "@/lib/api";
+import { ApiError, errorMessage, loginErrorMessage } from "@/lib/api";
 
 declare global {
   interface Window {
@@ -86,7 +86,7 @@ export default function LoginPage() {
     try {
       await signIn(email, password);
     } catch (cause) {
-      setError(errorMessage(cause));
+      setError(loginErrorMessage(cause));
     } finally {
       submitting.current = false;
       setPending(false);

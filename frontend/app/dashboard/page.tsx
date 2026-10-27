@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowUpRight, Clock3, FileSearch, UsersRound } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { EmptyState, LoadError, PageHeading } from "@/components/ui";
 import { api, errorMessage } from "@/lib/api";
@@ -12,7 +12,23 @@ export default function DashboardPage() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  useEffect(() => { api.dashboard().then(setSummary).catch((cause) => setError(errorMessage(cause))).finally(() => setLoading(false)); }, []);
+  const loadStartedAt = useRef<number | null>(null);
+  useEffect(() => {
+    loadStartedAt.current = performance.now();
+    api.dashboard()
+      .then(setSummary)
+      .catch((cause) => setError(errorMessage(cause)))
+      .finally(() => setLoading(false));
+  }, []);
+  useEffect(() => {
+    if (!loading && loadStartedAt.current !== null) {
+      performance.measure("apaar.dashboard.initial_load", {
+        start: loadStartedAt.current,
+        end: performance.now(),
+      });
+      loadStartedAt.current = null;
+    }
+  }, [loading]);
   return <AppShell>
     <PageHeading eyebrow="Today in the registry" title="A clearer view of the record." description="A live overview from your authorized APAAR Verify workspace. Nothing here is inferred from unavailable data." />
     {error && <LoadError>{error}</LoadError>}

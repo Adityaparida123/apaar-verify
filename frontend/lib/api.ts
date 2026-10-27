@@ -12,6 +12,13 @@ import type {
 } from "@/lib/types";
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/+$/, "");
+const AUTH_REQUEST_TIMEOUT_MS = 10_000;
+const DASHBOARD_REQUEST_TIMEOUT_MS = 15_000;
+
+interface RequestOptions {
+  timeoutMs?: number;
+  timingName?: string;
+}
 
 export class ApiError extends Error {
   status: number;
@@ -39,35 +46,73 @@ export function clearToken(): void {
   window.sessionStorage.removeItem("apaar_access_token");
 }
 
-async function request<T>(path: string, init: RequestInit = {}, authenticated = true): Promise<T> {
+async function request<T>(
+  path: string,
+  init: RequestInit = {},
+  authenticated = true,
+  options: RequestOptions = {},
+): Promise<T> {
   const headers = new Headers(init.headers);
   if (!(init.body instanceof FormData) && init.body !== undefined) headers.set("Content-Type", "application/json");
   const token = authenticated ? getStoredToken() : null;
   if (token) headers.set("Authorization", `Bearer ${token}`);
-  let response: Response;
+  const controller = options.timeoutMs ? new AbortController() : null;
+  const timeout = controller ? setTimeout(() => controller.abort(), options.timeoutMs) : null;
+  const timingStartedAt = options.timingName && typeof performance !== "undefined"
+    ? performance.now()
+    : undefined;
   try {
-    response = await fetch(`${API_URL}${path}`, { ...init, headers, cache: "no-store" });
-  } catch {
-    throw new Error(`Cannot reach the backend at ${API_URL}. Check that it is running and that CORS allows this frontend origin.`);
-  }
-  if (!response.ok) {
-    if (response.status === 401 && authenticated && typeof window !== "undefined") {
-      clearToken();
-      window.dispatchEvent(new Event("apaar:unauthorized"));
-    }
-    let detail: unknown;
+    let response: Response;
     try {
-      const body: unknown = await response.json();
-      detail = typeof body === "object" && body !== null && "detail" in body
-        ? (body as { detail: unknown }).detail
-        : body;
+      response = await fetch(`${API_URL}${path}`, {
+        ...init,
+        headers,
+        cache: "no-store",
+        ...(controller ? { signal: controller.signal } : {}),
+      });
     } catch {
-      detail = response.statusText || "Request failed";
+      if (controller?.signal.aborted) {
+        throw new Error("The request timed out. Please try again.");
+      }
+      throw new Error(`Cannot reach the backend at ${API_URL}. Check that it is running and that CORS allows this frontend origin.`);
     }
-    throw new ApiError(response.status, detail);
+    if (!response.ok) {
+      if (response.status === 401 && authenticated && typeof window !== "undefined") {
+        clearToken();
+        window.dispatchEvent(new Event("apaar:unauthorized"));
+      }
+      let detail: unknown;
+      try {
+        const body: unknown = await response.json();
+        detail = typeof body === "object" && body !== null && "detail" in body
+          ? (body as { detail: unknown }).detail
+          : body;
+      } catch {
+        if (controller?.signal.aborted) {
+          throw new Error("The request timed out. Please try again.");
+        }
+        detail = response.statusText || "Request failed";
+      }
+      throw new ApiError(response.status, detail);
+    }
+    if (response.status === 204) return undefined as T;
+    try {
+      return await response.json() as T;
+    } catch (cause) {
+      if (controller?.signal.aborted) {
+        throw new Error("The request timed out. Please try again.");
+      }
+      throw cause;
+    }
+  } finally {
+    if (timeout !== null) clearTimeout(timeout);
+    if (timingStartedAt !== undefined && options.timingName) {
+      performance.measure(options.timingName, {
+        start: timingStartedAt,
+        end: performance.now(),
+      });
+    }
   }
-  if (response.status === 204) return undefined as T;
-  return response.json() as Promise<T>;
 }
 
 export const api = {
@@ -76,14 +121,19 @@ export const api = {
       "/api/v1/auth/login",
       { method: "POST", body: JSON.stringify({ email, password }) },
       false,
+      { timeoutMs: AUTH_REQUEST_TIMEOUT_MS, timingName: "apaar.auth.login_request" },
     ),
   googleLogin: (credential: string) =>
     request<{ access_token: string; token_type: string; expires_in: number }>(
       "/api/v1/auth/google",
       { method: "POST", body: JSON.stringify({ credential }) },
       false,
+      { timeoutMs: AUTH_REQUEST_TIMEOUT_MS, timingName: "apaar.auth.google_login_request" },
     ),
-  me: () => request<User>("/api/v1/auth/me"),
+  me: () => request<User>("/api/v1/auth/me", {}, true, {
+    timeoutMs: AUTH_REQUEST_TIMEOUT_MS,
+    timingName: "apaar.auth.me_request",
+  }),
   students: (params: URLSearchParams) =>
     request<PageResult<Student>>(`/api/v1/students?${params.toString()}`),
   createStudent: (payload: StudentCreateRequest) =>
@@ -103,7 +153,10 @@ export const api = {
       `/api/v1/students/${encodeURIComponent(recordId)}/corrections`,
       { method: "POST", body: JSON.stringify({ changes, expected_version: expectedVersion, reason }) },
     ),
-  dashboard: () => request<DashboardSummary>("/api/v1/dashboard/summary"),
+  dashboard: () => request<DashboardSummary>("/api/v1/dashboard/summary", {}, true, {
+    timeoutMs: DASHBOARD_REQUEST_TIMEOUT_MS,
+    timingName: "apaar.dashboard.summary_request",
+  }),
   intake: () => request<{ items: IntakeComparison[] }>("/api/v1/dashboard/intake"),
   reviewTasks: (params: URLSearchParams) => request<PageResult<ReviewTask>>(`/api/v1/review-tasks?${params}`),
   updateReviewTask: (taskId: string, payload: { status: "in_progress" | "resolved" | "dismissed"; review_note: string; outcome?: string }) =>
@@ -138,4 +191,9 @@ export function errorMessage(error: unknown): string {
     return error.message;
   }
   return error instanceof Error ? error.message : "An unexpected error occurred.";
+}
+
+export function loginErrorMessage(error: unknown): string {
+  if (error instanceof ApiError && error.status === 401) return "Invalid email or password.";
+  return errorMessage(error);
 }

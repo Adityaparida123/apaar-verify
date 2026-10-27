@@ -12,6 +12,13 @@ from app.config import get_settings
 
 password_hash = PasswordHash.recommended()
 
+# Precomputed with PasswordHash.recommended() (Argon2id m=65536,t=3,p=4).
+# Keep this static so unknown-account verification does not hash per request.
+DUMMY_PASSWORD_HASH = (
+    "$argon2id$v=19$m=65536,t=3,p=4$mTv320qFLveKvV1ORCT9mA$"
+    "tdHvMOzz9HLQ5mKJUuOWBQHkdvPzLLBPbyVJynMBdHw"
+)
+
 
 def hash_password(password: str) -> str:
     return password_hash.hash(password)

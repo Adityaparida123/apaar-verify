@@ -1,4 +1,7 @@
-from fastapi import APIRouter, Depends, Request
+from typing import Any
+
+from fastapi import APIRouter, Depends, HTTPException, Request
+from pymongo.errors import PyMongoError
 
 from app.database import database_status
 from app.dependencies import database_dependency
@@ -18,5 +21,9 @@ def health(request: Request) -> dict[str, object]:
 
 
 @router.get("/ready")
-def ready(_: object = Depends(database_dependency)) -> dict[str, str]:
+def ready(database: Any = Depends(database_dependency)) -> dict[str, str]:
+    try:
+        database.command("ping")
+    except (RuntimeError, PyMongoError) as exc:
+        raise HTTPException(status_code=503, detail="Database is unavailable") from exc
     return {"status": "ready"}

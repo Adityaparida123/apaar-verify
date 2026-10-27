@@ -22,6 +22,8 @@ uvicorn app.main:app --reload
 
 The interactive API documentation is at `http://localhost:8000/docs`; root, health, and readiness checks are `/`, `/health`, and `/ready`. `/health` separates API availability from MongoDB connectivity. `/ready` returns HTTP 503 when MongoDB is not reachable.
 
+Authentication and initial dashboard requests emit data-free timing records through the `apaar_verify` logger: `request_timing` for login, Google login, `/auth/me`, and dashboard summary; and `auth_timing` for MongoDB account lookup, Argon2 verification, and JWT creation. Records contain only a fixed stage/endpoint name and elapsed milliseconds—never credentials, tokens, cookies, account identifiers, or student data. The browser records `apaar.auth.*_request`, `apaar.dashboard.summary_request`, and `apaar.dashboard.initial_load` measures in the Performance Timeline; these are not transmitted. Authentication requests time out after 10 seconds and dashboard summary after 15 seconds, with loading state cleared on errors and timeouts. The API no longer pings MongoDB before every request: normal database operation errors return HTTP 503, while `/health` and `/ready` continue to probe database connectivity explicitly.
+
 Student URL parameters and verification-token issuance use the generated `record_id` returned by student create/list responses. The separately supplied `student_id` is unique within its institution namespace and is not used as the route key.
 
 ## Environment variables

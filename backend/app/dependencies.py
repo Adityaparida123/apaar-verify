@@ -16,7 +16,6 @@ def database_dependency(request: Request) -> Any:
         return request.app.state.database_override
     try:
         database = get_database()
-        database.command("ping")
         if not request.app.state.database_indexes_ready:
             ensure_indexes(database)
             request.app.state.database_indexes_ready = True
