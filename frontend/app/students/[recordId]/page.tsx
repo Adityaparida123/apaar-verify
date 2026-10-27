@@ -40,7 +40,7 @@ export default function StudentDetailsPage() {
           </div>
           <Link href="/impact" className="button button-accent"><FileSearch size={15} />Review a proposed correction</Link>
         </section>
-        <section className="panel panel-pad" style={{ background: "var(--lavender)" }}>
+        <section className="panel panel-pad" style={{ background: "var(--surface-tint)" }}>
           <p className="eyebrow">Record history</p><h2>History is not exposed here.</h2>
           <p className="lede" style={{ marginBottom: 14 }}>The backend preserves record versions internally but does not currently provide a version-history listing endpoint. No history is simulated in this view.</p>
           <div className="notice">Current version: v{student.version}. Use the impact detector to preview a proposed update against this version.</div>

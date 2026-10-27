@@ -35,13 +35,13 @@ export default function DashboardPage() {
     {loading ? <p className="lede">Loading dashboard data…</p> : summary && <>
       <section className="editorial-grid" style={{ marginBottom: 22 }}>
         <div className="panel hero-panel">
-          <p className="eyebrow" style={{ color: "var(--butter)" }}>Attention, with context</p>
+          <p className="eyebrow">Attention, with context</p>
           <h2>{summary.records_needing_review} record{summary.records_needing_review === 1 ? "" : "s"} need a closer look.</h2>
           <p>{summary.open_review_tasks} open review task{summary.open_review_tasks === 1 ? "" : "s"} from recorded assessment workflows.</p>
           <Link href="/review" className="button button-accent">Open review queue <ArrowUpRight size={15} /></Link>
-          <svg className="hero-stamp" viewBox="0 0 120 120" fill="none" aria-hidden="true"><path d="M25 13h46l25 25v67H25z" stroke="#f7f4ec" strokeWidth="2"/><path d="M71 14v25h24M40 56h39M40 68h26" stroke="#f7f4ec" strokeWidth="2"/><path d="m43 88 9 9 23-23" stroke="#f0d98a" strokeWidth="4"/><circle cx="25" cy="13" r="4" fill="#e66b4e"/><circle cx="96" cy="38" r="4" fill="#e66b4e"/></svg>
+          <svg className="hero-stamp" viewBox="0 0 120 120" fill="none" aria-hidden="true"><path d="M25 13h46l25 25v67H25z" stroke="currentColor" strokeWidth="2"/><path d="M71 14v25h24M40 56h39M40 68h26" stroke="currentColor" strokeWidth="2"/><path d="m43 88 9 9 23-23" stroke="var(--primary)" strokeWidth="4"/><circle cx="25" cy="13" r="4" fill="var(--primary)"/><circle cx="96" cy="38" r="4" fill="var(--primary)"/></svg>
         </div>
-        <div className="panel panel-pad" style={{ background: "var(--lavender)" }}>
+        <div className="panel panel-pad" style={{ background: "var(--surface-tint)" }}>
           <p className="eyebrow">Next step</p>
           <h2>Review before you revise.</h2>
           <p className="lede" style={{ marginBottom: 21 }}>The impact detector previews deterministic checks before an authorized correction is committed.</p>

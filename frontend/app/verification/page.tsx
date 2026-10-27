@@ -58,7 +58,7 @@ export default function VerificationPage() {
         </form>
         {token && <div style={{ marginTop: 20 }}><p className="section-label">Copy the one-time token</p><div className="token-box">{token}</div><button className="button button-secondary button-small" style={{ marginTop: 10 }} onClick={() => navigator.clipboard.writeText(token)}>Copy token</button><button className="button button-danger button-small" style={{ marginTop: 10, marginLeft: 8 }} disabled={busy} onClick={revoke}>Revoke this token</button></div>}
       </section> : <section className="panel panel-pad"><p className="eyebrow">Credential issuance</p><h2>Issuer permission required</h2><p className="lede">Your role can check a credential, but token issuance and revocation require an institution administrator or AICTE official.</p></section>}
-      <section className="panel panel-pad" style={{ background: "var(--lavender)" }}>
+      <section className="panel panel-pad" style={{ background: "var(--surface-tint)" }}>
         <p className="eyebrow">Public token check</p><h2>Verify a credential</h2>
         <div className="field"><label htmlFor="verify-token">Verification token</label><input className="input" id="verify-token" value={verifyValue} onChange={(event) => setVerifyValue(event.target.value)} /></div>
         <button className="button" onClick={verify} disabled={busy || !verifyValue.trim()}>Check credential</button>

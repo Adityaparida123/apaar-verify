@@ -101,10 +101,10 @@ export default function LoginPage() {
           <span><span className="brand-name">APAAR Verify</span><span className="brand-sub">Academic records</span></span>
         </div>
         <div>
-          <p className="eyebrow" style={{ color: "var(--butter)" }}>A careful record, a clear history</p>
+          <p className="eyebrow">A careful record, a clear history</p>
           <h1>Trust is built one correction at a time.</h1>
           <p>Review proposed changes, understand their possible impact, and keep every decision accountable.</p>
-          <BookOpenCheck size={48} strokeWidth={1} color="#f0d98a" aria-hidden="true" />
+          <BookOpenCheck className="auth-art-icon" size={48} strokeWidth={1} aria-hidden="true" />
         </div>
         <p style={{ fontSize: 11, margin: 0 }}>Prototype platform · Not an official APAAR or AICTE service</p>
       </section>

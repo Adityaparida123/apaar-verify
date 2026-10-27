@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en" suppressHydrationWarning><body>
-    <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem("apaar_theme");document.documentElement.dataset.theme=t||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch(e){document.documentElement.dataset.theme="light"}` }} />
+  return <html lang="en" data-theme="light" suppressHydrationWarning><body>
+    <script dangerouslySetInnerHTML={{ __html: `try{var t=localStorage.getItem("apaar_theme");document.documentElement.dataset.theme=t==="dark"?"dark":"light"}catch(e){document.documentElement.dataset.theme="light"}` }} />
     <AuthProvider>{children}</AuthProvider>
   </body></html>;
 }

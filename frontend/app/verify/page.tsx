@@ -28,7 +28,7 @@ export default function PublicVerifyPage() {
         <span><span className="brand-name">APAAR Verify</span><span className="brand-sub">Public credential check</span></span>
       </Link>
       <div>
-        <p className="eyebrow" style={{ color: "var(--butter)" }}>A bounded claim</p>
+        <p className="eyebrow">A bounded claim</p>
         <h1>Check a credential, not a person's whole record.</h1>
         <p>This public check returns only the claims exposed by the backend verification endpoint.</p>
       </div>
