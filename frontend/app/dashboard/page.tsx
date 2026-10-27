@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowUpRight, Clock3, FileSearch, UsersRound } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { AppShell } from "@/components/app-shell";
-import { EmptyState, LoadError, PageHeading } from "@/components/ui";
+import { LoadError, PageHeading } from "@/components/ui";
 import { api, errorMessage } from "@/lib/api";
 import type { DashboardSummary } from "@/lib/types";
 
@@ -56,16 +56,19 @@ export default function DashboardPage() {
           ["Approved intake", summary.approved_intake],
         ].map(([label, value]) => <div key={label} className="panel-flat metric"><span className="metric-label">{label}</span><strong className="metric-value">{Number(value).toLocaleString()}</strong><span className="metric-label">Current API result</span></div>)}
       </section>
-      <section className="editorial-grid">
-        <div>
-          <p className="section-label">Recent audit activity</p>
-          {summary.recent_changes.length ? <div className="panel panel-pad activity-list">{summary.recent_changes.map((event, index) => <div className="activity-item" key={`${event.timestamp}-${index}`}><span className="timeline-dot" /><div><div className="activity-action">{event.action.replaceAll(".", " ")}{event.target_record_id ? ` · ${event.target_record_id}` : ""}</div><div className="field-help">{event.actor_role.replaceAll("_", " ")} · {event.outcome}</div></div><time className="activity-time">{new Date(event.timestamp).toLocaleString()}</time></div>)}</div> : <div className="panel-flat"><EmptyState title="No audit events returned">The API returned no recent activity for this scope.</EmptyState></div>}
-        </div>
-        <div className="panel panel-pad">
-          <p className="section-label">Quick access</p>
-          <Link className="row" href="/students" style={{ padding: "12px 0", borderBottom: "1px solid var(--line)" }}><span><UsersRound size={16} style={{ marginRight: 9, verticalAlign: "middle" }} />Browse student records</span><ArrowUpRight size={15} /></Link>
-          <Link className="row" href="/audit" style={{ padding: "12px 0", borderBottom: "1px solid var(--line)" }}><span><Clock3 size={16} style={{ marginRight: 9, verticalAlign: "middle" }} />Explore audit log</span><ArrowUpRight size={15} /></Link>
-          <p className="field-help" style={{ marginTop: 17 }}>This prototype does not query official APAAR or AICTE systems.</p>
+      <section className="panel panel-pad dashboard-quick-access" aria-labelledby="quick-access-title">
+        <h2 className="section-label dashboard-quick-access-title" id="quick-access-title">Quick access</h2>
+        <div className="dashboard-quick-access-links">
+          <Link className="dashboard-quick-access-link" href="/students">
+            <UsersRound size={18} aria-hidden="true" />
+            <span>Browse student records</span>
+            <ArrowUpRight size={16} aria-hidden="true" />
+          </Link>
+          <Link className="dashboard-quick-access-link" href="/audit">
+            <Clock3 size={18} aria-hidden="true" />
+            <span>Explore audit log</span>
+            <ArrowUpRight size={16} aria-hidden="true" />
+          </Link>
         </div>
       </section>
     </>}
