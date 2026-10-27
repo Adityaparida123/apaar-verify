@@ -105,14 +105,15 @@ export interface DashboardSummary {
 export interface IntakeComparison {
   institution_id: string;
   programme: string;
-  academic_year: string;
+  academic_year: string | null;
   approved_intake: number | null;
   actual_enrolment: number;
   remaining_capacity: number | null;
-  excess_enrolment: number;
+  excess_enrolment: number | null;
   regular_enrolment: number;
   supernumerary_enrolment: number;
   supernumerary_limit: number | null;
+  supernumerary_excess: number | null;
 }
 
 export interface AuditEvent {
