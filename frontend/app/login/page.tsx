@@ -32,7 +32,7 @@ declare global {
 
 export default function LoginPage() {
   const { signIn, signInWithGoogle } = useAuth();
-  const [email, setEmail] = useState("admin@example.com");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);

@@ -642,9 +642,12 @@ def test_csv_invalid_row_is_rejected_without_inserting_records(database) -> None
 
 def test_health_distinguishes_missing_database_configuration(monkeypatch) -> None:
     from app.database import get_client
+    from app.config import Settings
 
-    monkeypatch.delenv("MONGODB_URI", raising=False)
-    get_settings.cache_clear()
+    class EmptySettings(Settings):
+        mongodb_uri: str | None = None
+
+    monkeypatch.setattr("app.database.get_settings", lambda: EmptySettings(mongodb_uri=None))
     get_client.cache_clear()
     app = create_app()
 
